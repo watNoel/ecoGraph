@@ -1,0 +1,114 @@
+---
+title: "plotmap"
+author: "Noel Waters"
+format: html
+editor: visual
+---
+
+### Useful links:
+
+<https://rstudio.github.io/leaflet/articles/shiny.html>
+
+```{r}
+## make clickable map.
+
+#install.packages("leaflet")
+
+library(leaflet)
+
+sessionInfo()
+
+
+
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+
+## If we can merge in the biome info on the longitude/lattitude it can be a clickable filter in the shiny app!
+## Make the filer on the marker level.
+
+markers<- all_nw_info |> 
+  filter(! ( is.na(latitude) | is.na(longitude))) |> 
+  select(network_name, network_type,latitude,longitude,location) |> 
+  rename(lat=latitude,lng=longitude) |> 
+  mutate(labs=paste(sep = "<br/>",
+                    paste0("<b>Network Name:</b> ",network_name),
+                    paste0("<b>Network Type:</b>",network_type),
+                    paste0("<b>Location:</b>", location),
+                    paste0("<b> Long\\Lat: </b>",round(lng,3),"\\",round(lat,3))
+                                            )
+         )
+## Add custom filters
+if (filter_longlat ==TRUE){
+  markers <- markers |> filter( lat > 2)
+  
+}
+## If there was a biome...
+if (filter_biome ==TRUE){
+  markers <- markers |> filter(biome==selected_biome)
+}
+#
+  #filter ( addsomefilter...)
+
+# color palette
+colorpalette <- colorFactor("viridis", levels = unique(markers$network_type))
+
+
+llmap<-leaflet(markers) |> 
+  addTiles() |> 
+  setView(lat=57.469696,lng=18.487759,zoom=1) |> 
+  addCircleMarkers(color=~colorpalette(network_type),
+                   popup  = ~labs,
+                   label = ~network_name
+                   ) |> 
+  addLegend(
+            position = "topright",
+            pal = colorpalette, values = ~network_type,
+            title = "Network Type",
+            opacity = 1)
+
+llmap.on('click',function(point){
+  var addr = 
+}
+
+```
+
+The `e`
+
+```{r}
+
+library(shiny)
+library(leaflet)
+
+r_colors <- rgb(t(col2rgb(colors()) / 255))
+names(r_colors) <- colors()
+
+ui <- fluidPage(
+  leafletOutput("mymap"),
+  p(),
+  actionButton("recalc", "New points")
+)
+
+server <- function(input, output, session) {
+
+  points <- eventReactive(input$recalc, {
+    cbind(rnorm(40) * 2 + 13, rnorm(40) + 48)
+  }, ignoreNULL = FALSE)
+
+  output$mymap <- renderLeaflet({
+    leaflet() %>%
+      addProviderTiles(providers$Stadia.StamenTonerLite,
+        options = providerTileOptions(noWrap = TRUE)
+      ) %>%
+      addMarkers(data = points())
+  })
+}
+
+shinyApp(ui, server)
+
+```
+
+`cho: false` option disables the printing of code (only output is displayed).
