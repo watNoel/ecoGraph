@@ -1,0 +1,156 @@
+---
+title: "plotmap"
+author: "Noel Waters"
+format: html
+editor: visual
+---
+
+### Useful links:
+
+<https://rstudio.github.io/leaflet/articles/shiny.html>
+
+```{r}
+## make clickable map.
+
+#install.packages("leaflet")
+
+library(leaflet)
+
+sessionInfo()
+
+
+
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+
+## If we can merge in the biome info on the longitude/lattitude it can be a clickable filter in the shiny app!
+## Make the filer on the marker level.
+
+markers<- all_nw_info |> 
+  filter(! ( is.na(latitude) | is.na(longitude))) |> 
+  select(network_name, network_type,latitude,longitude,location) |> 
+  rename(lat=latitude,lng=longitude) |> 
+  mutate(labs=paste(sep = "<br/>",
+                    paste0("<b>Network Name:</b> ",network_name),
+                    paste0("<b>Network Type:</b>",network_type),
+                    paste0("<b>Location:</b>", location),
+                    paste0("<b> Long\\Lat: </b>",round(lng,3),"\\",round(lat,3))
+                                            )
+         )
+## Add custom filters
+if (filter_longlat ==TRUE){
+  markers <- markers |> filter( lat > 2)
+  
+}
+## If there was a biome...
+if (filter_biome ==TRUE){
+  markers <- markers |> filter(biome==selected_biome)
+}
+#
+  #filter ( addsomefilter...)
+
+# color palette
+colorpalette <- colorFactor("viridis", levels = unique(markers$network_type))
+
+
+llmap<-leaflet(markers) |> 
+  addTiles() |> 
+  setView(lat=57.469696,lng=18.487759,zoom=1) |> 
+  addCircleMarkers(color=~colorpalette(network_type),
+                   popup  = ~labs,
+                   label = ~network_name
+                   ) |> 
+  addLegend(
+            position = "topright",
+            pal = colorpalette, values = ~network_type,
+            title = "Network Type",
+            opacity = 1)
+llmap
+
+
+llmap.on('click',function(point){
+  var addr = 
+}
+
+```
+
+The `e`
+
+ap_input
+
+```{r}
+
+#library(shiny)
+#library(leaflet)
+
+# Here I can add constant stuff
+
+##
+
+
+ui <- fluidPage(
+  leafletOutput("mymap"),
+  p("Something"),
+  textOutput("tOut"))
+
+server <- function(input, output, session) {
+
+map_input <- reactive({
+    
+  fulldf<- all_nw_info |> 
+  filter(! ( is.na(latitude) | is.na(longitude))) |> 
+  select(network_name, network_type,latitude,longitude,location) |> 
+  rename(lat=latitude,lng=longitude) |> 
+  mutate(labs=paste(sep = "<br/>",
+                    paste0("<b>Network Name:</b> ",network_name),
+                    paste0("<b>Network Type:</b>",network_type),
+                    paste0("<b>Location:</b>", location),
+                    paste0("<b> Long\\Lat: </b>",round(lng,3),"\\",round(lat,3))
+                                            )
+         )
+  
+  colorpalette <- colorFactor("viridis", levels = unique(fulldf$network_type))
+
+    
+  
+  return(list(
+    markers=fulldf,
+              colorpalette=colorpalette))
+    
+  })
+  
+
+output$tOut <- renderText({
+  print(input$mymap_marker_click)
+  input$mymap_shape_click
+  })
+
+
+output$mymap <- renderLeaflet({
+  mydata <- map_input()
+  leaflet(mydata$markers) |> 
+  addTiles() |> 
+  setView(lat=57.469696,lng=18.487759,zoom=1) |> 
+  addCircleMarkers(color=~mydata$colorpalette(network_type),
+                   popup  = ~labs,
+                   label = ~network_name,
+                   layerId = ~network_name
+                   ) |> 
+  addLegend(
+            position = "topright",
+            pal = mydata$colorpalette, values = ~network_type,
+            title = "Network Type",
+            opacity = 1)
+  })
+
+}
+
+shinyApp(ui, server)
+
+```
+
+`cho: false` option disables the printing of code (only output is displayed).
