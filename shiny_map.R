@@ -103,19 +103,23 @@ server <- function(input, output, session) {
     
  # })
   
-  output$table<-renderDataTable({
+  output$table<-DT::renderDT({
     
     netName<-revals$netID
   
 net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
-    
+  
+net<-all_nws|> 
+  filter(network_name==!!netName)|> 
+  select(species1, species2, connection_strength)
+
     # General metrics
     
     plants<-net_info|> filter(role=="Plant")|> nrow()
     animals <- net_info|> filter(role=="Pollinator")|> nrow()
     size <- plants*animals
     richness <- plants+animals
-    links <- net|> nrow()
+    links <- net |> nrow()
     conn <- round(links/size, 3)
     
 netMetrics <- data.frame(netName, size, conn, plants, animals, richness)
@@ -129,12 +133,12 @@ netMetrics
     
     netName<-revals$netID
     print("Hey")
-
-    graph<-graph_from_data_frame(net, directed = T)
-    
+   
     net<-all_nws|> 
       filter(network_name==!!netName)|> 
       select(species1, species2, connection_strength)
+    
+    graph<-graph_from_data_frame(net, directed = T)
     
     netLayout<-list()
     
@@ -143,6 +147,8 @@ netMetrics
       select(network_type)
     
     ntype<-ntype[1]
+    
+    net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
     
     isResource <- net_info$is.resource |> as.logical() # 0/1 converted to FALSE/TRUE
     
@@ -161,17 +167,13 @@ netMetrics
       netLayout<-igraph::layout_as_bipartite(graph)
     }
     
-    netPlot<-plot(graph, 
+plot(graph, 
                   layout=netLayout, 
                   arrow.mode=0,
                   vertex.label=NA,
                   vertex.size=4,
                   asp=0.2)
-    
-    return(netPlot)
   })
-  
-  
   
   
   output$mymap <- renderLeaflet({
