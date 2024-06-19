@@ -17,6 +17,7 @@ First we take a look on how how many networks we have by country:
 library("rjson") 
 library("jsonlite")
 library("kableExtra")
+library("ggplot2")
 
 # define the base url
 base_url <- "https://www.web-of-life.es/"
@@ -166,7 +167,6 @@ netPlot<-plot(graph,
 
 ```
 
-
 #options: tidygraph,
 plotly
 GGally
@@ -174,15 +174,13 @@ sna
 network
 visNetwork
 
-
-
 ```{r trying to make the network interactive}
 library(network)
 library(plotly)
 library(GGally)
 library(sna)
 
-net1 <- network(net, matrix.type = "edgelist")
+#net1 <- network(net, matrix.type = "edgelist")
 
 net1 <- network(net_matrix, matrix.type = "adjacency")
 
@@ -190,3 +188,5 @@ try <- ggnet2(net1, node.size = 1, node.color = "black",
 edge.size = 1, edge.color = "grey")
 
 ggplotly(try)
+
+```

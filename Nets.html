@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pamela Santana">
+
+<title>InteractEcoNet</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Nets_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Nets_files/libs/quarto-html/quarto.js"></script>
+<script src="Nets_files/libs/quarto-html/popper.min.js"></script>
+<script src="Nets_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Nets_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Nets_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Nets_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Nets_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Nets_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Nets_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="Nets_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="Nets_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<link href="Nets_files/libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="Nets_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="Nets_files/libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="Nets_files/libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="Nets_files/libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="Nets_files/libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="Nets_files/libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="Nets_files/libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="Nets_files/libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">InteractEcoNet</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Pamela Santana </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="working-with-one-network" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-one-network">Working with one network</h2>
+<p>We will work with pollination networks from the database Web of Life (“https://www.web-of-life.es/”). For that, we will need use rjson to be able to read the data from the database.</p>
+<p>First we take a look on how how many networks we have by country:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import the jsonlite package </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"rjson"</span>) </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"jsonlite"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'jsonlite'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:rjson':
+
+    fromJSON, toJSON</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"kableExtra"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define the base url</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>base_url <span class="ot">&lt;-</span> <span class="st">"https://www.web-of-life.es/"</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># download of all pollination networks</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>json_url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_url,<span class="st">"get_networks.php?interaction_type=Pollination"</span>) </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>pol_nws <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(json_url)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:kableExtra':
+
+    group_rows</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(pol_nws<span class="sc">$</span>network_name))<span class="co">#172 networks</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 172</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(pol_nws)<span class="co">#data.frame</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "data.frame"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pol_nws_info <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">paste0</span>(base_url,<span class="st">"get_network_info.php"</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>pol_nws_info <span class="ot">&lt;-</span> <span class="fu">filter</span>(pol_nws_info, network_type<span class="sc">==</span><span class="st">"Pollination"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># see what information is provided </span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#colnames(pol_nws_info)</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>countries<span class="ot">&lt;-</span><span class="fu">distinct</span>(pol_nws_info, country, region)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>quantNet<span class="ot">&lt;-</span>pol_nws_info<span class="sc">|&gt;</span> </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(region, country)<span class="sc">|&gt;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_networks=</span><span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'region'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(quantNet) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Continent"</span>, <span class="st">"Country"</span>, <span class="st">"Number of networks"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>quantNet <span class="sc">|&gt;</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">full_width =</span> F, <span class="at">html_font =</span> <span class="st">"Cambria"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="lightable-classic caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Continent</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Country</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Number of networks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Africa</td>
+<td style="text-align: left;">Mauritius</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Africa</td>
+<td style="text-align: left;">Seychelles</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Africa</td>
+<td style="text-align: left;">South Africa</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Argentina</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Brazil</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Canada</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Chile</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Colombia</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Dominica</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Ecuador</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Greenland</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Jamaica</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Mexico</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Peru</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Trinidad and Tobago</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">United States of America</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Americas</td>
+<td style="text-align: left;">Venezuela</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Asia</td>
+<td style="text-align: left;">Japan</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Europe</td>
+<td style="text-align: left;">Denmark</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Europe</td>
+<td style="text-align: left;">Greece</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Europe</td>
+<td style="text-align: left;">Portugal</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Europe</td>
+<td style="text-align: left;">Spain</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Europe</td>
+<td style="text-align: left;">Sweden</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Europe</td>
+<td style="text-align: left;">United Kingdom of Great Britain and Northern Ireland</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Oceania</td>
+<td style="text-align: left;">Australia</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Oceania</td>
+<td style="text-align: left;">New Zealand</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>And we can visualize it:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>quantNet<span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(Country,<span class="sc">+</span><span class="st">`</span><span class="at">Number of networks</span><span class="st">`</span>), <span class="at">y=</span><span class="st">`</span><span class="at">Number of networks</span><span class="st">`</span>))<span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">width =</span> <span class="fl">0.5</span>)<span class="sc">+</span><span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Continent, <span class="at">scales=</span><span class="st">"free_x"</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="dv">5</span>)<span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Nets_files/figure-html/amount%20of%20networks%20per%20country-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>After that, we can work on the network:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'igraph'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:dplyr':
+
+    as_data_frame, groups, union</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    decompose, spectrum</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:base':
+
+    union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>all_pol_nw_names <span class="ot">&lt;-</span> <span class="fu">distinct</span>(pol_nws, network_name)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">#net_to_graph&lt;-function(netname, if_directed=F){</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  curr_net &lt;- pol_nws|&gt; </span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">#    filter(network_name==!!netname)|&gt; </span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">#    select(species1, species2, connection_strength)|&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">#    graph_from_data_frame(directed = if_directed)</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  return(curr_net)}</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co">#makegraphs&lt;-purrr::map(as.list(unique(pol_nws$network_name)),.f=net_to_graph)</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co">#selecting a network</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>netName<span class="ot">&lt;-</span>all_pol_nw_names<span class="sc">|&gt;</span> </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(network_name<span class="sc">==</span><span class="st">"wherever come from Shiny"</span>)<span class="sc">|&gt;</span> </span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(network_name)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>netName<span class="ot">&lt;-</span>all_pol_nw_names[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>net<span class="ot">&lt;-</span>pol_nws<span class="sc">|&gt;</span> </span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(network_name<span class="sc">==!!</span>netName)<span class="sc">|&gt;</span> </span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(species1, species2, connection_strength)</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>graph<span class="ot">&lt;-</span><span class="fu">graph_from_data_frame</span>(net, <span class="at">directed =</span> T)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>net_matrix<span class="ot">&lt;-</span><span class="fu">as_adjacency_matrix</span>(graph,</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>                          <span class="co">#type = "lower", # it is directed!!!</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>                          <span class="co">#attr = "connection_strength",</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>                          <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a><span class="co">#class(net_matrix)</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a><span class="co">#class(net_matrix)&lt;-"numeric"</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a><span class="co">#net_matrix[which(is.na(net_matrix) == T)]&lt;-0</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="co">#dim(net_matrix)</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>net_info <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">paste0</span>(base_url,<span class="fu">paste</span>(<span class="st">"get_species_info.php?network_name="</span>,netName, <span class="at">sep=</span><span class="st">""</span>)))</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a><span class="co"># General metrics</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>plants<span class="ot">&lt;-</span>net_info<span class="sc">|&gt;</span> <span class="fu">filter</span>(role<span class="sc">==</span><span class="st">"Plant"</span>)<span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>animals <span class="ot">&lt;-</span> net_info<span class="sc">|&gt;</span> <span class="fu">filter</span>(role<span class="sc">==</span><span class="st">"Pollinator"</span>)<span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>size <span class="ot">&lt;-</span> plants<span class="sc">*</span>animals</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>richness <span class="ot">&lt;-</span> plants<span class="sc">+</span>animals</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>links <span class="ot">&lt;-</span> net<span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>conn <span class="ot">&lt;-</span> <span class="fu">round</span>(links<span class="sc">/</span>size, <span class="dv">3</span>)</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>netMetrics <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(netName, size, conn, plants, animals, richness)</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(netMetrics) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Network"</span>, <span class="st">"Size"</span>, <span class="st">"Connectance"</span>, <span class="st">"Amount of plants species"</span>, <span class="st">"Amount of pollinator species"</span>, <span class="st">"Total amount of species"</span>)</span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>netMetricsTab<span class="ot">&lt;-</span>netMetrics <span class="sc">|&gt;</span> </span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>() <span class="sc">|&gt;</span></span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">full_width =</span> F, <span class="at">html_font =</span> <span class="st">"Cambria"</span>)</span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a>netMetricsTab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="lightable-classic caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Network</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Size</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Connectance</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Amount of plants species</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Amount of pollinator species</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Total amount of species</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">M_PL_063</td>
+<td style="text-align: right;">495</td>
+<td style="text-align: right;">0.248</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">64</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'purrr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:igraph':
+
+    compose, simplify</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:jsonlite':
+
+    flatten</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>netOrg<span class="ot">&lt;-</span>net_info<span class="sc">|&gt;</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(role, family)<span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_networks=</span><span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'role'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pal<span class="ot">&lt;-</span>viridis<span class="sc">::</span><span class="fu">viridis</span>(<span class="fu">nrow</span>(netOrg))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">na.omit</span>(<span class="fu">as.data.frame</span>(netOrg)))<span class="sc">+</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(family,<span class="sc">+</span>n_networks), <span class="at">y=</span>n_networks, <span class="at">fill =</span> family), <span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">width =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Number of species per family"</span>, <span class="at">x=</span><span class="st">"Family"</span>, <span class="at">y=</span><span class="st">"Number of species"</span>)<span class="sc">+</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>role, <span class="at">scales=</span><span class="st">"free_x"</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="dv">2</span>)<span class="sc">+</span> <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>pal) <span class="sc">+</span> <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Nets_files/figure-html/barplots%20for%20one%20network-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>isResource <span class="ot">&lt;-</span> net_info<span class="sc">$</span>is.resource <span class="sc">%&gt;%</span> <span class="fu">as.logical</span>() <span class="co"># 0/1 converted to FALSE/TRUE</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the "type" attribute to the vertices of the graph </span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(graph)<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="sc">!</span>(isResource) </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(graph)<span class="sc">$</span>arrow.mode <span class="ot">=</span> <span class="st">"-"</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>color1<span class="ot">&lt;-</span><span class="st">"lightblue"</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>color2<span class="ot">&lt;-</span><span class="st">"yellow"</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(graph)<span class="sc">$</span>color <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">V</span>(graph)<span class="sc">$</span>type <span class="sc">==</span> <span class="cn">TRUE</span>, color1, color2)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>netLayout<span class="ot">&lt;-</span><span class="fu">layout_as_bipartite</span>(graph)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>netPlot<span class="ot">&lt;-</span><span class="fu">plot</span>(graph, </span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">layout=</span>netLayout, </span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">arrow.mode=</span><span class="dv">0</span>,</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.label=</span><span class="cn">NA</span>,</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size=</span><span class="dv">4</span>,</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">asp=</span><span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Nets_files/figure-html/plotting%20the%20network-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>#options: tidygraph, plotly GGally sna network visNetwork</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(network)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+'network' 1.18.2 (2023-12-04), part of the Statnet Project
+* 'news(package="network")' for changes since last version
+* 'citation("network")' for citation information
+* 'https://statnet.org' for help, support, and other information</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'network'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:igraph':
+
+    %c%, %s%, add.edges, add.vertices, delete.edges, delete.vertices,
+    get.edge.attribute, get.edges, get.vertex.attribute, is.bipartite,
+    is.directed, list.edge.attributes, list.vertex.attributes,
+    set.edge.attribute, set.vertex.attribute</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'plotly'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:igraph':
+
+    groups</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:ggplot2':
+
+    last_plot</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    filter</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:graphics':
+
+    layout</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sna)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: statnet.common</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'statnet.common'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    attr, order</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>sna: Tools for Social Network Analysis
+Version 2.7-2 created on 2023-12-05.
+copyright (c) 2005, Carter T. Butts, University of California-Irvine
+ For citation information, type citation("sna").
+ Type help(package="sna") to get started.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'sna'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:igraph':
+
+    betweenness, bonpow, closeness, components, degree, dyad.census,
+    evcent, hierarchy, is.connected, neighborhood, triad.census</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>net1 <span class="ot">&lt;-</span> <span class="fu">network</span>(net, <span class="at">matrix.type =</span> <span class="st">"edgelist"</span>)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>net1 <span class="ot">&lt;-</span> <span class="fu">network</span>(net_matrix, <span class="at">matrix.type =</span> <span class="st">"adjacency"</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>try <span class="ot">&lt;-</span> <span class="fu">ggnet2</span>(net1, <span class="at">node.size =</span> <span class="dv">1</span>, <span class="at">node.color =</span> <span class="st">"black"</span>, </span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="at">edge.size =</span> <span class="dv">1</span>, <span class="at">edge.color =</span> <span class="st">"grey"</span>)</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(try)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-b0dba314b333c65b378b" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-b0dba314b333c65b378b">{"x":{"data":[{"x":[0.87067503218570619,0.5675288252182521,null,0.23955634313113106,0.5675288252182521,null,0.36460797432165776,0.5675288252182521,null,0.46048335716547706,0.5675288252182521,null,0.56515577499784175,0.5675288252182521,null,0.17438633074784943,0.5675288252182521,null,0.15507932002671779,0.5675288252182521,null,0.7385008578702329,0.5675288252182521,null,0.86339392136284254,0.5675288252182521,null,0.9272531824685345,0.5675288252182521,null,0.25820411716915365,0.5675288252182521,null,0.5010101549246736,0.5675288252182521,null,0.31127294426675323,0.5675288252182521,null,0.6706923051819228,0.5675288252182521,null,0.21586786962103077,0.5675288252182521,null,0.97575543957272748,0.5675288252182521,null,0.34067151553807185,0.5675288252182521,null,0.4406115311772148,0.5675288252182521,null,0.47618519088617711,0.5675288252182521,null,0.65869990860133909,0.5675288252182521,null,0.31273106926385408,0.5675288252182521,null,0.76766697985182175,0.5675288252182521,null,0.85565511046208886,0.5675288252182521,null,0.97499968583628338,0.5675288252182521,null,0.26258878514056433,0.5675288252182521,null,0.15340832477795571,0.5675288252182521,null,0.19113514368298617,0.5675288252182521,null,0.89347614047672619,0.5675288252182521,null,0.7664405969647804,0.5675288252182521,null,0.6190245267204646,0.5675288252182521,null,0.35481706574008692,0.5675288252182521,null,0.61771047325069695,0.5675288252182521,null,0.94477735493767767,0.5675288252182521,null,0.81079450302772615,0.5675288252182521,null,1,0.5675288252182521,null,0.42147578299722011,0.5675288252182521,null,0.78938233019335213,0.5675288252182521,null,0.27562544720312609,0.5675288252182521,null,0.82200092370946309,0.5675288252182521,null,0.54244538942386045,0.5675288252182521,null,0.5162990527862964,0.5675288252182521,null,0.41099747417303661,0.5675288252182521,null,0.7310360594184927,0.5675288252182521,null,0.98181325145632004,0.5675288252182521,null,0.86021006930614141,0.5675288252182521,null,0.94016323808816671,0.5675288252182521,null,0.13743015335222872,0.5675288252182521,null,0.19138960180410303,0.5675288252182521,null,0.34371187490098731,0.5675288252182521,null,0.4511123571263137,0.5675288252182521,null,0.56207546434208189,0.5675288252182521,null,0.40277203578119253,0.5675288252182521,null,0.58074915564479557,0.5675288252182521,null,0.87067503218570619,0.70934608810533262,null,0.56515577499784175,0.70934608810533262,null,0.7385008578702329,0.70934608810533262,null,0.47618519088617711,0.70934608810533262,null,0.54244538942386045,0.70934608810533262,null,0.5162990527862964,0.70934608810533262,null,0.23955634313113106,0.30305501044331468,null,0,0.30305501044331468,null,0.36460797432165776,0.30305501044331468,null,0.46048335716547706,0.30305501044331468,null,0.56515577499784175,0.30305501044331468,null,0.17438633074784943,0.30305501044331468,null,0.15507932002671779,0.30305501044331468,null,0.25820411716915365,0.30305501044331468,null,0.31127294426675323,0.30305501044331468,null,0.21586786962103077,0.30305501044331468,null,0.34067151553807185,0.30305501044331468,null,0.4406115311772148,0.30305501044331468,null,0.47618519088617711,0.30305501044331468,null,0.26258878514056433,0.30305501044331468,null,0.15340832477795571,0.30305501044331468,null,0.35481706574008692,0.30305501044331468,null,0.61771047325069695,0.30305501044331468,null,0.42147578299722011,0.30305501044331468,null,0.11617817717708473,0.30305501044331468,null,0.54244538942386045,0.30305501044331468,null,0.5162990527862964,0.30305501044331468,null,0.13743015335222872,0.30305501044331468,null,0.19138960180410303,0.30305501044331468,null,0.40277203578119253,0.30305501044331468,null,0.23955634313113106,0.33211879505635128,null,0.36460797432165776,0.33211879505635128,null,0.46048335716547706,0.33211879505635128,null,0.56515577499784175,0.33211879505635128,null,0.17438633074784943,0.33211879505635128,null,0.31127294426675323,0.33211879505635128,null,0.21586786962103077,0.33211879505635128,null,0.4406115311772148,0.33211879505635128,null,0.47618519088617711,0.33211879505635128,null,0.31273106926385408,0.33211879505635128,null,0.15340832477795571,0.33211879505635128,null,0.19113514368298617,0.33211879505635128,null,0.6190245267204646,0.33211879505635128,null,0.35481706574008692,0.33211879505635128,null,0.11617817717708473,0.33211879505635128,null,0.54244538942386045,0.33211879505635128,null,0.5162990527862964,0.33211879505635128,null,0.40277203578119253,0.33211879505635128,null,0,0.23554086133441299,null,0.36460797432165776,0.23554086133441299,null,0.4406115311772148,0.23554086133441299,null,0.47618519088617711,0.23554086133441299,null,0.31273106926385408,0.23554086133441299,null,0.35481706574008692,0.23554086133441299,null,0.36460797432165776,0.12464366608675925,null,0.21586786962103077,0.12464366608675925,null,0.35481706574008692,0.12464366608675925,null,0.11617817717708473,0.12464366608675925,null,0.36460797432165776,0.61096863137873858,null,0.7385008578702329,0.61096863137873858,null,0.47618519088617711,0.61096863137873858,null,0.76766697985182175,0.61096863137873858,null,0.35481706574008692,0.61096863137873858,null,0.61771047325069695,0.61096863137873858,null,0.81079450302772615,0.61096863137873858,null,0.54244538942386045,0.61096863137873858,null,0.36460797432165776,0.27352727593457576,null,0.4406115311772148,0.27352727593457576,null,0.11617817717708473,0.27352727593457576,null,0.4406115311772148,0.62186560547924252],"y":[0.36697104547481618,0.62807223144363045,null,0.59840803356173533,0.62807223144363045,null,0.25443903605957796,0.62807223144363045,null,0.50515542231357691,0.62807223144363045,null,0.35063803002699728,0.62807223144363045,null,0.57166327108115778,0.62807223144363045,null,0.69955759735204237,0.62807223144363045,null,0.29378383852768331,0.62807223144363045,null,0.75717125821595865,0.62807223144363045,null,0.5777817522118871,0.62807223144363045,null,0.77524329493051714,0.62807223144363045,null,0.99761795299889955,0.62807223144363045,null,0.58868163701823928,0.62807223144363045,null,0.88166753629685091,0.62807223144363045,null,0.38207043041195921,0.62807223144363045,null,0.7438144604812571,0.62807223144363045,null,0.75031438215033863,0.62807223144363045,null,0.23278481737523984,0.62807223144363045,null,0.28486219420831821,0.62807223144363045,null,0.99256195327717689,0.62807223144363045,null,0.34794516983571849,0.62807223144363045,null,0.3658593067926898,0.62807223144363045,null,0.65804019803423597,0.62807223144363045,null,0.68100458150900467,0.62807223144363045,null,0.70374896146802257,0.62807223144363045,null,0.52384162558419078,0.62807223144363045,null,0.47806425984068079,0.62807223144363045,null,0.87154782113765072,0.62807223144363045,null,0.7969107936181502,0.62807223144363045,null,0.47999902166170794,0.62807223144363045,null,0.29536406336228821,0.62807223144363045,null,0.38501489679687861,0.62807223144363045,null,0.80781460665076688,0.62807223144363045,null,0.31355621387207799,0.62807223144363045,null,0.61438403084566562,0.62807223144363045,null,0.71595200907843493,0.62807223144363045,null,0.88985120943839735,0.62807223144363045,null,0.90186385164753158,0.62807223144363045,null,0.94366570492143087,0.62807223144363045,null,0.30507139068972622,0.62807223144363045,null,0.37537722656116523,0.62807223144363045,null,0.98438503179464643,0.62807223144363045,null,0.96930851067922952,0.62807223144363045,null,0.52396164951123891,0.62807223144363045,null,0.51243351381436664,0.62807223144363045,null,0.45470575022755649,0.62807223144363045,null,0.64338285256247429,0.62807223144363045,null,0.746149077204455,0.62807223144363045,null,0.93298717386927166,0.62807223144363045,null,0.91361786086870322,0.62807223144363045,null,0.90510779679519437,0.62807223144363045,null,0.58340751137707458,0.62807223144363045,null,1,0.62807223144363045,null,0.36697104547481618,0.17304642830699429,null,0.35063803002699728,0.17304642830699429,null,0.29378383852768331,0.17304642830699429,null,0.28486219420831821,0.17304642830699429,null,0.30507139068972622,0.17304642830699429,null,0.37537722656116523,0.17304642830699429,null,0.59840803356173533,0.47494828313830051,null,0.27383471729917791,0.47494828313830051,null,0.25443903605957796,0.47494828313830051,null,0.50515542231357691,0.47494828313830051,null,0.35063803002699728,0.47494828313830051,null,0.57166327108115778,0.47494828313830051,null,0.69955759735204237,0.47494828313830051,null,0.77524329493051714,0.47494828313830051,null,0.58868163701823928,0.47494828313830051,null,0.38207043041195921,0.47494828313830051,null,0.75031438215033863,0.47494828313830051,null,0.23278481737523984,0.47494828313830051,null,0.28486219420831821,0.47494828313830051,null,0.70374896146802257,0.47494828313830051,null,0.52384162558419078,0.47494828313830051,null,0.29536406336228821,0.47494828313830051,null,0.38501489679687861,0.47494828313830051,null,0.71595200907843493,0.47494828313830051,null,0.2272503880779318,0.47494828313830051,null,0.30507139068972622,0.47494828313830051,null,0.37537722656116523,0.47494828313830051,null,0.64338285256247429,0.47494828313830051,null,0.746149077204455,0.47494828313830051,null,0.58340751137707458,0.47494828313830051,null,0.59840803356173533,0.39866893036155004,null,0.25443903605957796,0.39866893036155004,null,0.50515542231357691,0.39866893036155004,null,0.35063803002699728,0.39866893036155004,null,0.57166327108115778,0.39866893036155004,null,0.58868163701823928,0.39866893036155004,null,0.38207043041195921,0.39866893036155004,null,0.23278481737523984,0.39866893036155004,null,0.28486219420831821,0.39866893036155004,null,0.34794516983571849,0.39866893036155004,null,0.52384162558419078,0.39866893036155004,null,0.47806425984068079,0.39866893036155004,null,0.47999902166170794,0.39866893036155004,null,0.29536406336228821,0.39866893036155004,null,0.2272503880779318,0.39866893036155004,null,0.30507139068972622,0.39866893036155004,null,0.37537722656116523,0.39866893036155004,null,0.58340751137707458,0.39866893036155004,null,0.27383471729917791,0.14357000936811115,null,0.25443903605957796,0.14357000936811115,null,0.23278481737523984,0.14357000936811115,null,0.28486219420831821,0.14357000936811115,null,0.34794516983571849,0.14357000936811115,null,0.29536406336228821,0.14357000936811115,null,0.25443903605957796,0.13642089600495566,null,0.38207043041195921,0.13642089600495566,null,0.29536406336228821,0.13642089600495566,null,0.2272503880779318,0.13642089600495566,null,0.25443903605957796,0.17032540795560278,null,0.29378383852768331,0.17032540795560278,null,0.28486219420831821,0.17032540795560278,null,0.3658593067926898,0.17032540795560278,null,0.29536406336228821,0.17032540795560278,null,0.38501489679687861,0.17032540795560278,null,0.31355621387207799,0.17032540795560278,null,0.30507139068972622,0.17032540795560278,null,0.25443903605957796,0.041330595305186249,null,0.23278481737523984,0.041330595305186249,null,0.2272503880779318,0.041330595305186249,null,0.23278481737523984,0],"text":["X1: 0.8706750<br />Y1: 0.3669710<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.8706750<br />Y1: 0.3669710<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.2395563<br />Y1: 0.5984080<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.2395563<br />Y1: 0.5984080<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.4604834<br />Y1: 0.5051554<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.4604834<br />Y1: 0.5051554<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.1743863<br />Y1: 0.5716633<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.1743863<br />Y1: 0.5716633<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.1550793<br />Y1: 0.6995576<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.1550793<br />Y1: 0.6995576<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.7385009<br />Y1: 0.2937838<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.7385009<br />Y1: 0.2937838<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.8633939<br />Y1: 0.7571713<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.8633939<br />Y1: 0.7571713<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.9272532<br />Y1: 0.5777818<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.9272532<br />Y1: 0.5777818<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.2582041<br />Y1: 0.7752433<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.2582041<br />Y1: 0.7752433<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.5010102<br />Y1: 0.9976180<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.5010102<br />Y1: 0.9976180<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.3112729<br />Y1: 0.5886816<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.3112729<br />Y1: 0.5886816<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.6706923<br />Y1: 0.8816675<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.6706923<br />Y1: 0.8816675<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.9757554<br />Y1: 0.7438145<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.9757554<br />Y1: 0.7438145<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.3406715<br />Y1: 0.7503144<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.3406715<br />Y1: 0.7503144<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.6586999<br />Y1: 0.9925620<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.6586999<br />Y1: 0.9925620<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.3127311<br />Y1: 0.3479452<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.3127311<br />Y1: 0.3479452<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.7676670<br />Y1: 0.3658593<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.7676670<br />Y1: 0.3658593<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.8556551<br />Y1: 0.6580402<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.8556551<br />Y1: 0.6580402<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.9749997<br />Y1: 0.6810046<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.9749997<br />Y1: 0.6810046<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.2625888<br />Y1: 0.7037490<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.2625888<br />Y1: 0.7037490<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.1534083<br />Y1: 0.5238416<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.1534083<br />Y1: 0.5238416<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.1911351<br />Y1: 0.4780643<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.1911351<br />Y1: 0.4780643<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.8934761<br />Y1: 0.8715478<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.8934761<br />Y1: 0.8715478<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.7664406<br />Y1: 0.7969108<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.7664406<br />Y1: 0.7969108<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.6190245<br />Y1: 0.4799990<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.6190245<br />Y1: 0.4799990<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.6177105<br />Y1: 0.3850149<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.6177105<br />Y1: 0.3850149<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.9447774<br />Y1: 0.8078146<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.9447774<br />Y1: 0.8078146<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.8107945<br />Y1: 0.3135562<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.8107945<br />Y1: 0.3135562<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 1.0000000<br />Y1: 0.6143840<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 1.0000000<br />Y1: 0.6143840<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.4214758<br />Y1: 0.7159520<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.4214758<br />Y1: 0.7159520<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.7893823<br />Y1: 0.8898512<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.7893823<br />Y1: 0.8898512<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.2756254<br />Y1: 0.9018639<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.2756254<br />Y1: 0.9018639<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.8220009<br />Y1: 0.9436657<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.8220009<br />Y1: 0.9436657<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.4109975<br />Y1: 0.9843850<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.4109975<br />Y1: 0.9843850<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.7310361<br />Y1: 0.9693085<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.7310361<br />Y1: 0.9693085<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.9818133<br />Y1: 0.5239616<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.9818133<br />Y1: 0.5239616<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.8602101<br />Y1: 0.5124335<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.8602101<br />Y1: 0.5124335<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.9401632<br />Y1: 0.4547058<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.9401632<br />Y1: 0.4547058<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.1374302<br />Y1: 0.6433829<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.1374302<br />Y1: 0.6433829<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.1913896<br />Y1: 0.7461491<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.1913896<br />Y1: 0.7461491<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.3437119<br />Y1: 0.9329872<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.3437119<br />Y1: 0.9329872<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.4511124<br />Y1: 0.9136179<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.4511124<br />Y1: 0.9136179<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.5620755<br />Y1: 0.9051078<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.5620755<br />Y1: 0.9051078<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.4027720<br />Y1: 0.5834075<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.4027720<br />Y1: 0.5834075<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.5807492<br />Y1: 1.0000000<br />X2: 0.5675288<br />Y2: 0.6280722","X1: 0.5807492<br />Y1: 1.0000000<br />X2: 0.5675288<br />Y2: 0.6280722",null,"X1: 0.8706750<br />Y1: 0.3669710<br />X2: 0.7093461<br />Y2: 0.1730464","X1: 0.8706750<br />Y1: 0.3669710<br />X2: 0.7093461<br />Y2: 0.1730464",null,"X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.7093461<br />Y2: 0.1730464","X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.7093461<br />Y2: 0.1730464",null,"X1: 0.7385009<br />Y1: 0.2937838<br />X2: 0.7093461<br />Y2: 0.1730464","X1: 0.7385009<br />Y1: 0.2937838<br />X2: 0.7093461<br />Y2: 0.1730464",null,"X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.7093461<br />Y2: 0.1730464","X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.7093461<br />Y2: 0.1730464",null,"X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.7093461<br />Y2: 0.1730464","X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.7093461<br />Y2: 0.1730464",null,"X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.7093461<br />Y2: 0.1730464","X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.7093461<br />Y2: 0.1730464",null,"X1: 0.2395563<br />Y1: 0.5984080<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.2395563<br />Y1: 0.5984080<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.0000000<br />Y1: 0.2738347<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.0000000<br />Y1: 0.2738347<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.4604834<br />Y1: 0.5051554<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.4604834<br />Y1: 0.5051554<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.1743863<br />Y1: 0.5716633<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.1743863<br />Y1: 0.5716633<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.1550793<br />Y1: 0.6995576<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.1550793<br />Y1: 0.6995576<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.2582041<br />Y1: 0.7752433<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.2582041<br />Y1: 0.7752433<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.3112729<br />Y1: 0.5886816<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.3112729<br />Y1: 0.5886816<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.3406715<br />Y1: 0.7503144<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.3406715<br />Y1: 0.7503144<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.2625888<br />Y1: 0.7037490<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.2625888<br />Y1: 0.7037490<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.1534083<br />Y1: 0.5238416<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.1534083<br />Y1: 0.5238416<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.6177105<br />Y1: 0.3850149<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.6177105<br />Y1: 0.3850149<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.4214758<br />Y1: 0.7159520<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.4214758<br />Y1: 0.7159520<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.1374302<br />Y1: 0.6433829<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.1374302<br />Y1: 0.6433829<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.1913896<br />Y1: 0.7461491<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.1913896<br />Y1: 0.7461491<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.4027720<br />Y1: 0.5834075<br />X2: 0.3030550<br />Y2: 0.4749483","X1: 0.4027720<br />Y1: 0.5834075<br />X2: 0.3030550<br />Y2: 0.4749483",null,"X1: 0.2395563<br />Y1: 0.5984080<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.2395563<br />Y1: 0.5984080<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.4604834<br />Y1: 0.5051554<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.4604834<br />Y1: 0.5051554<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.5651558<br />Y1: 0.3506380<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.1743863<br />Y1: 0.5716633<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.1743863<br />Y1: 0.5716633<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.3112729<br />Y1: 0.5886816<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.3112729<br />Y1: 0.5886816<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.3127311<br />Y1: 0.3479452<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.3127311<br />Y1: 0.3479452<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.1534083<br />Y1: 0.5238416<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.1534083<br />Y1: 0.5238416<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.1911351<br />Y1: 0.4780643<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.1911351<br />Y1: 0.4780643<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.6190245<br />Y1: 0.4799990<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.6190245<br />Y1: 0.4799990<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.5162991<br />Y1: 0.3753772<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.4027720<br />Y1: 0.5834075<br />X2: 0.3321188<br />Y2: 0.3986689","X1: 0.4027720<br />Y1: 0.5834075<br />X2: 0.3321188<br />Y2: 0.3986689",null,"X1: 0.0000000<br />Y1: 0.2738347<br />X2: 0.2355409<br />Y2: 0.1435700","X1: 0.0000000<br />Y1: 0.2738347<br />X2: 0.2355409<br />Y2: 0.1435700",null,"X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.2355409<br />Y2: 0.1435700","X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.2355409<br />Y2: 0.1435700",null,"X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.2355409<br />Y2: 0.1435700","X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.2355409<br />Y2: 0.1435700",null,"X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.2355409<br />Y2: 0.1435700","X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.2355409<br />Y2: 0.1435700",null,"X1: 0.3127311<br />Y1: 0.3479452<br />X2: 0.2355409<br />Y2: 0.1435700","X1: 0.3127311<br />Y1: 0.3479452<br />X2: 0.2355409<br />Y2: 0.1435700",null,"X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.2355409<br />Y2: 0.1435700","X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.2355409<br />Y2: 0.1435700",null,"X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.1246437<br />Y2: 0.1364209","X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.1246437<br />Y2: 0.1364209",null,"X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.1246437<br />Y2: 0.1364209","X1: 0.2158679<br />Y1: 0.3820704<br />X2: 0.1246437<br />Y2: 0.1364209",null,"X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.1246437<br />Y2: 0.1364209","X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.1246437<br />Y2: 0.1364209",null,"X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.1246437<br />Y2: 0.1364209","X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.1246437<br />Y2: 0.1364209",null,"X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.7385009<br />Y1: 0.2937838<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.7385009<br />Y1: 0.2937838<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.4761852<br />Y1: 0.2848622<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.7676670<br />Y1: 0.3658593<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.7676670<br />Y1: 0.3658593<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.3548171<br />Y1: 0.2953641<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.6177105<br />Y1: 0.3850149<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.6177105<br />Y1: 0.3850149<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.8107945<br />Y1: 0.3135562<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.8107945<br />Y1: 0.3135562<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.6109686<br />Y2: 0.1703254","X1: 0.5424454<br />Y1: 0.3050714<br />X2: 0.6109686<br />Y2: 0.1703254",null,"X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.2735273<br />Y2: 0.0413306","X1: 0.3646080<br />Y1: 0.2544390<br />X2: 0.2735273<br />Y2: 0.0413306",null,"X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.2735273<br />Y2: 0.0413306","X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.2735273<br />Y2: 0.0413306",null,"X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.2735273<br />Y2: 0.0413306","X1: 0.1161782<br />Y1: 0.2272504<br />X2: 0.2735273<br />Y2: 0.0413306",null,"X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.6218656<br />Y2: 0.0000000","X1: 0.4406115<br />Y1: 0.2327848<br />X2: 0.6218656<br />Y2: 0.0000000"],"type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(190,190,190,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.87067503218570619,0.23955634313113106,0,0.36460797432165776,0.46048335716547706,0.56515577499784175,0.17438633074784943,0.15507932002671779,0.7385008578702329,0.86339392136284254,0.9272531824685345,0.25820411716915365,0.5010101549246736,0.31127294426675323,0.6706923051819228,0.21586786962103077,0.97575543957272748,0.34067151553807185,0.4406115311772148,0.47618519088617711,0.65869990860133909,0.31273106926385408,0.76766697985182175,0.85565511046208886,0.97499968583628338,0.26258878514056433,0.15340832477795571,0.19113514368298617,0.89347614047672619,0.7664405969647804,0.6190245267204646,0.35481706574008692,0.61771047325069695,0.94477735493767767,0.81079450302772615,1,0.42147578299722011,0.78938233019335213,0.27562544720312609,0.11617817717708473,0.82200092370946309,0.54244538942386045,0.5162990527862964,0.41099747417303661,0.7310360594184927,0.98181325145632004,0.86021006930614141,0.94016323808816671,0.13743015335222872,0.19138960180410303,0.34371187490098731,0.4511123571263137,0.56207546434208189,0.40277203578119253,0.58074915564479557,0.5675288252182521,0.70934608810533262,0.30305501044331468,0.33211879505635128,0.23554086133441299,0.12464366608675925,0.61096863137873858,0.27352727593457576,0.62186560547924252],"y":[0.36697104547481618,0.59840803356173533,0.27383471729917791,0.25443903605957796,0.50515542231357691,0.35063803002699728,0.57166327108115778,0.69955759735204237,0.29378383852768331,0.75717125821595865,0.5777817522118871,0.77524329493051714,0.99761795299889955,0.58868163701823928,0.88166753629685091,0.38207043041195921,0.7438144604812571,0.75031438215033863,0.23278481737523984,0.28486219420831821,0.99256195327717689,0.34794516983571849,0.3658593067926898,0.65804019803423597,0.68100458150900467,0.70374896146802257,0.52384162558419078,0.47806425984068079,0.87154782113765072,0.7969107936181502,0.47999902166170794,0.29536406336228821,0.38501489679687861,0.80781460665076688,0.31355621387207799,0.61438403084566562,0.71595200907843493,0.88985120943839735,0.90186385164753158,0.2272503880779318,0.94366570492143087,0.30507139068972622,0.37537722656116523,0.98438503179464643,0.96930851067922952,0.52396164951123891,0.51243351381436664,0.45470575022755649,0.64338285256247429,0.746149077204455,0.93298717386927166,0.91361786086870322,0.90510779679519437,0.58340751137707458,1,0.62807223144363045,0.17304642830699429,0.47494828313830051,0.39866893036155004,0.14357000936811115,0.13642089600495566,0.17032540795560278,0.041330595305186249,0],"text":["x: 0.8706750<br />y: 0.3669710<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.2395563<br />y: 0.5984080<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.0000000<br />y: 0.2738347<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3646080<br />y: 0.2544390<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.4604834<br />y: 0.5051554<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.5651558<br />y: 0.3506380<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1743863<br />y: 0.5716633<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1550793<br />y: 0.6995576<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.7385009<br />y: 0.2937838<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.8633939<br />y: 0.7571713<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.9272532<br />y: 0.5777818<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.2582041<br />y: 0.7752433<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.5010102<br />y: 0.9976180<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3112729<br />y: 0.5886816<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.6706923<br />y: 0.8816675<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.2158679<br />y: 0.3820704<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.9757554<br />y: 0.7438145<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3406715<br />y: 0.7503144<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.4406115<br />y: 0.2327848<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.4761852<br />y: 0.2848622<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.6586999<br />y: 0.9925620<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3127311<br />y: 0.3479452<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.7676670<br />y: 0.3658593<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.8556551<br />y: 0.6580402<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.9749997<br />y: 0.6810046<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.2625888<br />y: 0.7037490<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1534083<br />y: 0.5238416<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1911351<br />y: 0.4780643<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.8934761<br />y: 0.8715478<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.7664406<br />y: 0.7969108<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.6190245<br />y: 0.4799990<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3548171<br />y: 0.2953641<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.6177105<br />y: 0.3850149<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.9447774<br />y: 0.8078146<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.8107945<br />y: 0.3135562<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 1.0000000<br />y: 0.6143840<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.4214758<br />y: 0.7159520<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.7893823<br />y: 0.8898512<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.2756254<br />y: 0.9018639<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1161782<br />y: 0.2272504<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.8220009<br />y: 0.9436657<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.5424454<br />y: 0.3050714<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.5162991<br />y: 0.3753772<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.4109975<br />y: 0.9843850<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.7310361<br />y: 0.9693085<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.9818133<br />y: 0.5239616<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.8602101<br />y: 0.5124335<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.9401632<br />y: 0.4547058<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1374302<br />y: 0.6433829<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1913896<br />y: 0.7461491<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3437119<br />y: 0.9329872<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.4511124<br />y: 0.9136179<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.5620755<br />y: 0.9051078<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.4027720<br />y: 0.5834075<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.5807492<br />y: 1.0000000<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.5675288<br />y: 0.6280722<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.7093461<br />y: 0.1730464<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3030550<br />y: 0.4749483<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.3321188<br />y: 0.3986689<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.2355409<br />y: 0.1435700<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.1246437<br />y: 0.1364209<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.6109686<br />y: 0.1703254<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.2735273<br />y: 0.0413306<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1","x: 0.6218656<br />y: 0.0000000<br />factor(alpha): 1<br />factor(color): black<br />factor(shape): 19<br />factor(size): 1"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":3.7795275590551185,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":26.228310502283108,"r":7.3059360730593621,"b":13.88127853881279,"l":10.958904109589042},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.050000000000000003,1.05],"tickmode":"array","ticktext":[],"tickvals":[],"categoryorder":"array","categoryarray":[],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.050000000000000003,1.05],"tickmode":"array","ticktext":[],"tickvals":[],"categoryorder":"array","categoryarray":[],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.955168119551681},"title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":11.955168119551681}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"3f9f21762951":{"x":{},"y":{},"xend":{},"yend":{},"type":"scatter"},"3f9f54929600":{"x":{},"y":{},"alpha":{},"colour":{},"shape":{},"size":{}}},"cur_data":"3f9f21762951","visdat":{"3f9f21762951":["function (y) ","x"],"3f9f54929600":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
