@@ -54,7 +54,8 @@ ui <- fluidPage(
       br(),  # Add space between the map and tabs
       tabsetPanel(
         tabPanel("Network Metrics", DT::DTOutput('table')),
-        tabPanel("Network Plotting", plotOutput("graph"))
+        tabPanel("Network Plotting", plotOutput("graph")),
+        tabPanel("Families Plot", plotOutput("graph2"))
       )
     )
   ),
@@ -174,8 +175,22 @@ plot(graph,
                   vertex.size=4,
                   asp=0.2)
   })
-  
-  
+  output$graph<-renderPlot({
+    
+    net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
+    
+    netOrg<-net_info|> 
+    group_by(role, family)|>
+    summarise(n_networks=n())
+    
+    pal<-viridis::viridis(nrow(netOrg))
+    ggplot(na.omit(as.data.frame(netOrg)))+
+      geom_bar(aes(x=reorder(family,+n_networks), y=n_networks, fill = family), stat="identity", width = 0.5)+
+      labs(title="Number of species per family", x="Family", y="Number of species")+
+      facet_wrap(~role, scales="free_x", nrow = 1, ncol = 2)+ scale_fill_manual(values=pal) + theme_bw()+
+      theme(axis.text.x = element_text(angle = 90))
+    
+  })
   output$mymap <- renderLeaflet({
     map_data <- map_input()
     leaflet(map_data$markers) |> 
