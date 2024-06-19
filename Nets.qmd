@@ -37,6 +37,7 @@ pol_nws_info <- filter(pol_nws_info, network_type=="Pollination")
 # see what information is provided 
 #colnames(pol_nws_info)
 countries<-distinct(pol_nws_info, country, region)
+
 quantNet<-pol_nws_info|> 
   group_by(region, country)|>
   summarise(n_networks=n())
@@ -51,16 +52,19 @@ quantNet |>
 
 And we can visualize it:
 
-```{r}
+```{r amount of networks per country}
+
 quantNet|>
-  ggplot(aes(x=Country, y=`Number of networks`))+
+  ggplot(aes(x=reorder(Country,+`Number of networks`), y=`Number of networks`))+
   geom_bar(stat="identity", width = 0.5)+theme_bw()+
   facet_wrap(~Continent, scales="free_x", nrow = 1, ncol = 5)+ labs(x=NULL)+theme(axis.text.x = element_text(angle = 90))
+
 ```
 
 After that, we can work on the network:
 
-```{r}
+```{r general metrics for one network}
+
 library(igraph)
 
 all_pol_nw_names <- distinct(pol_nws, network_name)
@@ -99,37 +103,6 @@ net_matrix<-as_adjacency_matrix(graph,
 
 net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
 
-isResource <- net_info$is.resource %>% as.logical() # 0/1 converted to FALSE/TRUE
-
-# Add the "type" attribute to the vertices of the graph 
-V(graph)$type <- !(isResource) 
-E(graph)$arrow.mode = "-"
-
-color1<-"lightblue"
-color2<-"yellow"
-
-V(graph)$color <- ifelse(V(graph)$type == TRUE, color1, color2)
-
-netLayout<-layout_as_bipartite(graph)
-
-plot(graph, 
-     layout=netLayout, 
-     arrow.mode=0,
-     vertex.label=NA,
-     vertex.size=4,
-     asp=0.2)
-
-```
-
-#options: tidygraph,
-plotly
-GGally
-sna
-network
-visNetwork
-
-```{r general metrics from one network}
-
 # General metrics
 
 plants<-net_info|> filter(role=="Plant")|> nrow()
@@ -143,33 +116,67 @@ netMetrics <- data.frame(netName, size, conn, plants, animals, richness)
 
 names(netMetrics) <- c("Network", "Size", "Connectance", "Amount of plants species", "Amount of pollinator species", "Total amount of species")
 
-netMetrics |> 
+netMetricsTab<-netMetrics |> 
   kbl() |>
   kable_classic(full_width = F, html_font = "Cambria")
+
+netMetricsTab
 ```
 
-```{r}
-  
+
+```{r barplots for one network}
+
 library(ggplot2)
 library(purrr)
-library(plo)
 
-netFamilies<-net_info|> 
-  filter(role=="Plant")|>
-  group_by(c(family))|>
-  summarise(unique_species=length(unique(species)))
+netOrg<-net_info|> 
+  group_by(role, family)|>
+  summarise(n_networks=n())
 
-colnames(netFamilies)<-c("family", "unique_species")
-
-pal <- colorRampPalette(colors = c("lightblue", "blue"))(nrow(netFamilies))
-
-ggplot(na.omit(as.data.frame(netFamilies)))+
-  geom_bar(aes(x=family, y=unique_species, fill = family), stat="identity")+labs(title="Number of species per family", x="Family", y="Number of species")+
-  scale_fill_manual(values=pal) + theme_bw()+
+pal<-viridis::viridis(nrow(netOrg))
+ggplot(na.omit(as.data.frame(netOrg)))+
+  geom_bar(aes(x=reorder(family,+n_networks), y=n_networks, fill = family), stat="identity", width = 0.5)+
+  labs(title="Number of species per family", x="Family", y="Number of species")+
+  facet_wrap(~role, scales="free_x", nrow = 1, ncol = 2)+ scale_fill_manual(values=pal) + theme_bw()+
   theme(axis.text.x = element_text(angle = 90))
 ```
 
-```{r general metrics from one network}
+
+```{r plotting the network}
+
+isResource <- net_info$is.resource %>% as.logical() # 0/1 converted to FALSE/TRUE
+
+# Add the "type" attribute to the vertices of the graph 
+V(graph)$type <- !(isResource) 
+E(graph)$arrow.mode = "-"
+
+color1<-"lightblue"
+color2<-"yellow"
+
+V(graph)$color <- ifelse(V(graph)$type == TRUE, color1, color2)
+
+netLayout<-layout_as_bipartite(graph)
+
+netPlot<-plot(graph, 
+     layout=netLayout, 
+     arrow.mode=0,
+     vertex.label=NA,
+     vertex.size=4,
+     asp=0.2)
+
+```
+
+
+#options: tidygraph,
+plotly
+GGally
+sna
+network
+visNetwork
+
+
+
+```{r trying to make the network interactive}
 library(network)
 library(plotly)
 library(GGally)
