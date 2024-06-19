@@ -46,7 +46,7 @@ require(DT)
 
 
 ui <- fluidPage(
-  titlePanel(title = div(h2("Shiny App", align = "left"))),
+  titlePanel(title = div(h1("EcoWeb", align = "left"))),
   sidebarLayout(
     sidebarPanel(
       checkboxGroupInput("select_net_type", "Select Network Type:",
