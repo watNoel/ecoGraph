@@ -119,7 +119,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$mymap_marker_click, {
     revals$netID <-input$mymap_marker_click$id
-    print("Something")
+    print("Event observed- network now", revals$netID)
     
     
   })
@@ -159,7 +159,6 @@ netMetrics
   output$graph<-renderPlot({
     
     netName<-revals$netID
-    print("Hey")
 
     net<-all_nws|> 
       filter(network_name==!!netName)|> 
