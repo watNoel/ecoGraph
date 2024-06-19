@@ -1,39 +1,48 @@
+
 {
-library(shiny)
-library(tidyverse)
-library(leaflet) # for interactive map
-library(jsonlite) # FOr reading URLS
-library(purrr) # for MAP
-library(igraph) # for network analysis
+require(shiny)
+require(tidyverse)
+require(leaflet) # for interactive map
+require(jsonlite) # FOr reading URLS
+require(purrr) # for MAP
+require(igraph) # for network analysis
+require(DT)
 } 
-#require(plotly)
 
 #### Loading data- precomputing
+{  
+    base_url <- "https://www.web-of-life.es/"
+    
+    json_url <- paste0(base_url,"get_networks.php") 
+    
+    all_nws <- jsonlite::fromJSON(json_url)
+    # This holds also the country/long/lat information
+    all_nw_info <- read.csv(paste0(base_url,"get_network_info.php")) # |> select relevant columns
+    all_nw_names <- distinct(all_nw_info, network_name)
+    
+    
+    #all_species_info_list<- purrr::map(.x=all_nw_names$network_name[1:10],.f=\(.name){
+    #  net_info<-read.csv(paste0(base_url,paste("get_species_info.php?network_name=",.name, sep=""))) |> mutate(network_name=.name)
+    #})
+    #all_species_info_df<-do.call(rbind,all_species_info_list)
+    
+    # Precompute the marker information for the map in the app.
+    markers<- all_nw_info |> 
+      filter(! ( is.na(latitude) | is.na(longitude))) |> 
+      rename(lat=latitude,lng=longitude) |> 
+      mutate(labs=paste(sep = "<br/>",
+                        paste0("<b>Network Name:</b> ",network_name),
+                        paste0("<b>Network Type:</b>",network_type),
+                        paste0("<b>Location:</b>", location),
+                        paste0("<b> Long\\Lat: </b>",round(lng,3),"\\",round(lat,3))
+      )
+      ) |> 
+      select(!c(location_address,cell_values_description,abundance_description))
+    
+}  
 
 
-base_url <- "https://www.web-of-life.es/"
-
-json_url <- paste0(base_url,"get_networks.php") 
-
-all_nws <- jsonlite::fromJSON(json_url)
-# This holds also the country/long/lat information
-all_nw_info <- read.csv(paste0(base_url,"get_network_info.php")) # |> select relevant columns
-
-all_nw_names <- distinct(all_nws, network_name)
-
-# Precompute the marker information for the map in the app.
-markers<- all_nw_info |> 
-  filter(! ( is.na(latitude) | is.na(longitude))) |> 
-  rename(lat=latitude,lng=longitude) |> 
-  mutate(labs=paste(sep = "<br/>",
-                    paste0("<b>Network Name:</b> ",network_name),
-                    paste0("<b>Network Type:</b>",network_type),
-                    paste0("<b>Location:</b>", location),
-                    paste0("<b> Long\\Lat: </b>",round(lng,3),"\\",round(lat,3))
-  )
-  ) |> 
-  select(!c(location_address,cell_values_description,abundance_description))
-
+# User Interface ---------------------------------------------------------
 
 
 ui <- fluidPage(
@@ -119,7 +128,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$mymap_marker_click, {
     revals$netID <-input$mymap_marker_click$id
-    print("Event observed- network now", revals$netID)
+    print(paste("Event observed- network now", revals$netID))
     
     
   })
@@ -163,12 +172,7 @@ netMetrics
   output$graph<-renderPlot({
     
     netName<-revals$netID
-<<<<<<< HEAD
 
-=======
-    print("Hey")
-   
->>>>>>> 7efd5092c83f2eeafa89cfd06f4d0c6d2ceaf409
     net<-all_nws|> 
       filter(network_name==!!netName)|> 
       select(species1, species2, connection_strength)
