@@ -35,7 +35,7 @@ pol_nws_info <- read.csv(paste0(base_url,"get_network_info.php"))
 pol_nws_info <- filter(pol_nws_info, network_type=="Pollination")
 
 # see what information is provided 
-colnames(pol_nws_info)
+#colnames(pol_nws_info)
 countries<-distinct(pol_nws_info, country, region)
 quantNet<-pol_nws_info|> 
   group_by(region, country)|>
@@ -62,7 +62,6 @@ After that, we can work on the network:
 
 ```{r}
 library(igraph)
-class(pol_nws$network_name)
 
 all_pol_nw_names <- distinct(pol_nws, network_name)
 
@@ -88,15 +87,14 @@ net<-pol_nws|>
   select(species1, species2, connection_strength)
 
 graph<-graph_from_data_frame(net, directed = T)
-class(graph)
 
 net_matrix<-as_adjacency_matrix(graph,
                           #type = "lower", # it is directed!!!
                           #attr = "connection_strength",
                           sparse = FALSE)
-
-class(net_matrix)<-"numeric"
-net_matrix[which(is.na(net_matrix) == T)]<-0
+#class(net_matrix)
+#class(net_matrix)<-"numeric"
+#net_matrix[which(is.na(net_matrix) == T)]<-0
 #dim(net_matrix)
 
 net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
@@ -129,16 +127,29 @@ GGally
 sna
 network
 visNetwork
+
 ```{r general metrics from one network}
 
 # General metrics
 
 plants<-net_info|> filter(role=="Plant")|> nrow()
-  animals <- distinct(net, species2) |> nrow()
-  size <- plants*animals
-  links <- net|> nrow()
-  conn <- round(links/size, 3)
+animals <- net_info|> filter(role=="Pollinator")|> nrow()
+size <- plants*animals
+richness <- plants+animals
+links <- net|> nrow()
+conn <- round(links/size, 3)
 
+netMetrics <- data.frame(netName, size, conn, plants, animals, richness)
+
+names(netMetrics) <- c("Network", "Size", "Connectance", "Amount of plants species", "Amount of pollinator species", "Total amount of species")
+
+netMetrics |> 
+  kbl() |>
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+
+```{r}
+  
 library(ggplot2)
 library(purrr)
 library(plo)
@@ -156,8 +167,19 @@ ggplot(na.omit(as.data.frame(netFamilies)))+
   geom_bar(aes(x=family, y=unique_species, fill = family), stat="identity")+labs(title="Number of species per family", x="Family", y="Number of species")+
   scale_fill_manual(values=pal) + theme_bw()+
   theme(axis.text.x = element_text(angle = 90))
- 
-
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+```{r general metrics from one network}
+library(network)
+library(plotly)
+library(GGally)
+library(sna)
+
+net1 <- network(net, matrix.type = "edgelist")
+
+net1 <- network(net_matrix, matrix.type = "adjacency")
+
+try <- ggnet2(net1, node.size = 1, node.color = "black", 
+edge.size = 1, edge.color = "grey")
+
+ggplotly(try)
