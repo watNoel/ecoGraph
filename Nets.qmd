@@ -1,0 +1,137 @@
+---
+title: "InteracEcoNet"
+author: "Pamela Santana"
+format: html
+editor: visual
+---
+
+## Working with one network
+
+We will work with pollination networks from the database Web of Life ("https://www.web-of-life.es/"). For that, we will need use rjson to be able to read the data from the database. 
+
+```{r import data from one network}
+# import the jsonlite package 
+
+library("rjson") 
+library("jsonlite")
+
+# define the base url
+base_url <- "https://www.web-of-life.es/"     
+
+# download of all pollination networks
+json_url <- paste0(base_url,"get_networks.php?interaction_type=Pollination") 
+
+pol_nws <- jsonlite::fromJSON(json_url)
+
+library(dplyr)
+length(unique(pol_nws$network_name))#172 networks
+class(pol_nws)#data.frame
+
+pol_nws_info <- read.csv(paste0(base_url,"get_network_info.php"))
+
+pol_nws_info <- filter(pol_nws_info, network_type=="Pollination")
+
+# see what information is provided 
+colnames(pol_nws_info)
+countries<-distinct(pol_nws_info, country)
+quantNet<-pol_nws_info|> 
+  group_by(country)|>
+  summarise(n_networks=n())
+
+quantNet|>
+  ggplot(aes(x=country, y=n_networks))+
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+```{r}
+library(igraph)
+class(pol_nws$network_name)
+
+net_to_graph<-function(netname, if_directed=F){
+  curr_net <- pol_nws|> 
+    filter(network_name==!!netname)|> 
+    select(species1, species2, connection_strength)|>
+    graph_from_data_frame(directed = if_directed)
+  return(curr_net)
+}
+
+makegraphs<-purrr::map(as.list(unique(pol_nws$network_name)),.f=net_to_graph)
+
+#selecting a network
+
+netName<-pol_nws_total[3,1]
+
+net<-pol_nws|> 
+  filter(network_name==!!netName)|> 
+  select(species1, species2, connection_strength)
+
+graph<-graph_from_data_frame(net, directed = T)
+class(graph)
+
+net_matrix<-as_adjacency_matrix(graph,
+                          #type = "lower", # it is directed!!!
+                          #attr = "connection_strength",
+                          sparse = FALSE)
+
+class(net_matrix)<-"numeric"
+net_matrix[which(is.na(net_matrix) == T)]<-0
+#dim(net_matrix)
+
+net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
+
+isResource <- net_info$is.resource %>% as.logical() # 0/1 converted to FALSE/TRUE
+
+# Add the "type" attribute to the vertices of the graph 
+V(graph)$type <- !(isResource) 
+
+E(graph)$arrow.mode = "-"
+
+color1<-"lightblue"
+color2<-"yellow"
+
+V(graph)$color <- ifelse(V(graph)$type == TRUE, color1, color2)
+
+netLayout<-layout_as_bipartite(graph)
+
+plot(graph, 
+     layout=netLayout, 
+     arrow.mode=0,
+     vertex.label=NA,
+     vertex.size=4,
+     asp=0.2)
+```
+
+
+```{r general metrics from one network}
+
+# General metrics
+
+plants<-net_info|> filter(role=="Plant")|> nrow()
+  animals <- distinct(net, species2) |> nrow()
+  size <- plants*animals
+  links <- net|> nrow()
+  conn <- round(links/size, 3)
+
+library(ggplot2)
+library(purrr)
+library(plo)
+
+netFamilies<-net_info|> 
+  filter(role=="Plant")|>
+  group_by(c(family))|>
+  summarise(unique_species=length(unique(species)))
+
+colnames(netFamilies)<-c("family", "unique_species")
+
+pal <- colorRampPalette(colors = c("lightblue", "blue"))(nrow(netFamilies))
+
+ggplot(na.omit(as.data.frame(netFamilies)))+
+  geom_bar(aes(x=family, y=unique_species, fill = family), stat="identity")+labs(title="Number of species per family", x="Family", y="Number of species")+
+  scale_fill_manual(values=pal) + theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+ 
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
