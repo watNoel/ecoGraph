@@ -52,7 +52,7 @@ ui <- fluidPage(
       leafletOutput("mymap", height = 400),
       br(),  # Add space between the map and tabs
       tabsetPanel(
-        tabPanel("Network Metrics", dataTableOutput('table')),
+        tabPanel("Network Metrics", DT::DTOutput('table')),
         tabPanel("Network Plotting", plotOutput("graph"))
       )
     )
@@ -134,19 +134,23 @@ server <- function(input, output, session) {
     
  # })
   
-  output$table<-renderDataTable({
+  output$table<-DT::renderDT({
     
     netName<-revals$netID
   
 net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
-    
+  
+net<-all_nws|> 
+  filter(network_name==!!netName)|> 
+  select(species1, species2, connection_strength)
+
     # General metrics
     
     plants<-net_info|> filter(role=="Plant")|> nrow()
     animals <- net_info|> filter(role=="Pollinator")|> nrow()
     size <- plants*animals
     richness <- plants+animals
-    links <- net|> nrow()
+    links <- net |> nrow()
     conn <- round(links/size, 3)
     
 netMetrics <- data.frame(netName, size, conn, plants, animals, richness)
@@ -159,18 +163,29 @@ netMetrics
   output$graph<-renderPlot({
     
     netName<-revals$netID
+<<<<<<< HEAD
 
+=======
+    print("Hey")
+   
+>>>>>>> 7efd5092c83f2eeafa89cfd06f4d0c6d2ceaf409
     net<-all_nws|> 
       filter(network_name==!!netName)|> 
       select(species1, species2, connection_strength)
     
     graph<-graph_from_data_frame(net, directed = T)
     
+    netLayout<-list()
     
-    species_info <- read.csv(paste0(base_url,
-                            paste("get_species_info.php?network_name=",netName, sep="")))
+    ntype<-all_nw_info|> 
+      filter(network_name==!!netName)|> 
+      select(network_type)
     
-    isResource <- species_info$is.resource %>% as.logical() # 0/1 converted to FALSE/TRUE
+    ntype<-ntype[1]
+    
+    net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
+    
+    isResource <- net_info$is.resource |> as.logical() # 0/1 converted to FALSE/TRUE
     
     # Add the "type" attribute to the vertices of the graph 
     V(graph)$type <- !(isResource) 
@@ -181,17 +196,19 @@ netMetrics
     
     V(graph)$color <- ifelse(V(graph)$type == TRUE, color1, color2)
     
-    netLayout<-layout_as_bipartite(graph)
+    if(ntype=="Food Webs"){
+      netLayout<-igraph::layout_on_sphere(graph)
+    }else{
+      netLayout<-igraph::layout_as_bipartite(graph)
+    }
     
-    plot(graph, 
-         layout=netLayout, 
-         arrow.mode=0,
-         vertex.label=NA,
-         vertex.size=4,
-         asp=0.2)
+plot(graph, 
+                  layout=netLayout, 
+                  arrow.mode=0,
+                  vertex.label=NA,
+                  vertex.size=4,
+                  asp=0.2)
   })
-  
-  
   
   
   output$mymap <- renderLeaflet({
