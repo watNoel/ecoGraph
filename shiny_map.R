@@ -63,7 +63,7 @@ ui <- fluidPage(
       tabsetPanel(
         tabPanel("Network Metrics", DT::DTOutput('table')),
         tabPanel("Network Plotting", plotOutput("graph")),
-        tabPanel("Families Plot", plotOutput("graph2"))
+        tabPanel("Families Plot", plotOutput("family"))
       )
     )
   ),
@@ -214,7 +214,8 @@ plot(graph,
                   vertex.size=4,
                   asp=0.2)
   })
-  output$graph<-renderPlot({
+  output$family<-renderPlot({
+    netName<-revals$netID
     
     net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
     
@@ -222,12 +223,16 @@ plot(graph,
     group_by(role, family)|>
     summarise(n_networks=n())
     
-    pal<-viridis::viridis(nrow(netOrg))
+    color1<-"lightblue"
+    color2<-"yellow"
+    
+    pal<-viridis::viridis(length(unique(netOrg$role)))
+    
     ggplot(na.omit(as.data.frame(netOrg)))+
-      geom_bar(aes(x=reorder(family,+n_networks), y=n_networks, fill = family), stat="identity", width = 0.5)+
-      labs(title="Number of species per family", x="Family", y="Number of species")+
-      facet_wrap(~role, scales="free_x", nrow = 1, ncol = 2)+ scale_fill_manual(values=pal) + theme_bw()+
-      theme(axis.text.x = element_text(angle = 90))
+      geom_bar(aes(x=reorder(family,+n_networks), y=n_networks, group= role, fill = role), stat="identity", width = 0.5)+    labs(title="Number of species per family", x="Family", y="Number of species")+
+      scale_fill_manual(values=pal) + theme_bw()+
+      theme(axis.text.x = element_text(angle = 90))+
+      guides(fill="none", group="none")
     
   })
   output$mymap <- renderLeaflet({
