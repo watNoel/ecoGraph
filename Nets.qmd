@@ -1,5 +1,5 @@
 ---
-title: "InteracEcoNet"
+title: "InteractEcoNet"
 author: "Pamela Santana"
 format: html
 editor: visual
@@ -9,14 +9,17 @@ editor: visual
 
 We will work with pollination networks from the database Web of Life ("https://www.web-of-life.es/"). For that, we will need use rjson to be able to read the data from the database. 
 
+First we take a look on how how many networks we have by country:
+
 ```{r import data from one network}
 # import the jsonlite package 
 
 library("rjson") 
 library("jsonlite")
+library("kableExtra")
 
 # define the base url
-base_url <- "https://www.web-of-life.es/"     
+base_url <- "https://www.web-of-life.es/"
 
 # download of all pollination networks
 json_url <- paste0(base_url,"get_networks.php?interaction_type=Pollination") 
@@ -33,34 +36,52 @@ pol_nws_info <- filter(pol_nws_info, network_type=="Pollination")
 
 # see what information is provided 
 colnames(pol_nws_info)
-countries<-distinct(pol_nws_info, country)
+countries<-distinct(pol_nws_info, country, region)
 quantNet<-pol_nws_info|> 
-  group_by(country)|>
+  group_by(region, country)|>
   summarise(n_networks=n())
 
-quantNet|>
-  ggplot(aes(x=country, y=n_networks))+
-  geom_bar(stat="identity")+
-  theme(axis.text.x = element_text(angle = 90))
+names(quantNet) <- c("Continent", "Country", "Number of networks")
+
+quantNet |> 
+  kbl() |>
+  kable_classic(full_width = F, html_font = "Cambria")
+
 ```
+
+And we can visualize it:
+
+```{r}
+quantNet|>
+  ggplot(aes(x=Country, y=`Number of networks`))+
+  geom_bar(stat="identity", width = 0.5)+theme_bw()+
+  facet_wrap(~Continent, scales="free_x", nrow = 1, ncol = 5)+ labs(x=NULL)+theme(axis.text.x = element_text(angle = 90))
+```
+
+After that, we can work on the network:
 
 ```{r}
 library(igraph)
 class(pol_nws$network_name)
 
-net_to_graph<-function(netname, if_directed=F){
-  curr_net <- pol_nws|> 
-    filter(network_name==!!netname)|> 
-    select(species1, species2, connection_strength)|>
-    graph_from_data_frame(directed = if_directed)
-  return(curr_net)
-}
+all_pol_nw_names <- distinct(pol_nws, network_name)
 
-makegraphs<-purrr::map(as.list(unique(pol_nws$network_name)),.f=net_to_graph)
+#net_to_graph<-function(netname, if_directed=F){
+#  curr_net <- pol_nws|> 
+#    filter(network_name==!!netname)|> 
+#    select(species1, species2, connection_strength)|>
+#    graph_from_data_frame(directed = if_directed)
+#  return(curr_net)}
+
+#makegraphs<-purrr::map(as.list(unique(pol_nws$network_name)),.f=net_to_graph)
 
 #selecting a network
 
-netName<-pol_nws_total[3,1]
+netName<-all_pol_nw_names|> 
+  filter(network_name=="wherever come from Shiny")|> 
+  select(network_name)
+
+netName<-all_pol_nw_names[1,1]
 
 net<-pol_nws|> 
   filter(network_name==!!netName)|> 
@@ -84,7 +105,6 @@ isResource <- net_info$is.resource %>% as.logical() # 0/1 converted to FALSE/TRU
 
 # Add the "type" attribute to the vertices of the graph 
 V(graph)$type <- !(isResource) 
-
 E(graph)$arrow.mode = "-"
 
 color1<-"lightblue"
@@ -100,9 +120,15 @@ plot(graph,
      vertex.label=NA,
      vertex.size=4,
      asp=0.2)
+
 ```
 
-
+#options: tidygraph,
+plotly
+GGally
+sna
+network
+visNetwork
 ```{r general metrics from one network}
 
 # General metrics
