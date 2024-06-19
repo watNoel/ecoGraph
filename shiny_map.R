@@ -36,18 +36,17 @@ markers<- all_nw_info |>
 
 
 
-
-
-
 ui <- fluidPage(
   titlePanel(title = div(h2("Shiny App", align = "left"))),
   sidebarLayout(
     sidebarPanel(
-      selectInput("net_type", "Select Network Type:",
-                   choices = unique(markers$network_type)),
-      selectInput("select_country", "Select Country :",
-                  choices = unique(markers$country)),
-      uiOutput("ui_out")
+      checkboxGroupInput("select_net_type", "Select Network Type:",
+                   choices = c("All",unique(markers$network_type)),
+                   selected = "All"),
+      uiOutput("select_country")
+      #selectInput("select_country", "Select Country :",
+       #           choices = c("All",unique(markers$country))),
+
     ),
     mainPanel(
       leafletOutput("mymap", height = 400),
@@ -58,8 +57,6 @@ ui <- fluidPage(
       )
     )
   ),
-  
-  
 )
 
 
@@ -68,6 +65,21 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
+  output$select_country <- renderUI({
+    if ("All" %in% input$select_net_type | is.null(input$select_net_type)){
+      
+      avail_countries<-unique(markers$country)
+      
+    } else {
+      
+      avail_countries<- markers |> filter(network_type %in% input$select_net_type) |> select(country) |> unique()
+    }
+    
+      selectInput("select_country", "Select Country :",
+                  choices = c("All",avail_countries))
+    
+  })
+  
   map_input <- reactive({
     
     map_df<-markers # Here we can add filters and stuff later...
@@ -75,15 +87,34 @@ server <- function(input, output, session) {
     colorpalette <- colorFactor("viridis", levels = unique(map_df$network_type))
     
     
+    if ("All" %in% input$select_net_type | is.null(input$select_net_type)){
+      print( "All network types selected")
+    } else {
+      map_df <- map_df |> filter(network_type %in% input$select_net_type)
+    }
+    
+    if ("All" == input$select_country | is.null(input$select_country)){
+      starting_point<-data.frame("lat"=57.469696,
+                                 "lng"=18.487759,
+                                 "zoom"=1)
+        
+    } else {
+      map_df <- map_df |> filter(country == input$select_country)
+      starting_point<-map_df |> select(lng,lat) |> summarise_all(mean) |> mutate(zoom=2)
+      
+    }
+    
+    
     
     return(list(
       markers=map_df,
-      colorpalette=colorpalette))
+      colorpalette=colorpalette,
+      starting_point=starting_point))
     
   })
   
   
-  
+  # This is for 
   revals<-reactiveValues(netID=NA)
   
   observeEvent(input$mymap_marker_click, {
@@ -168,7 +199,9 @@ netMetrics
     map_data <- map_input()
     leaflet(map_data$markers) |> 
       addTiles() |> 
-      setView(lat=57.469696,lng=18.487759,zoom=1) |> 
+      setView(lat=map_data$starting_point$lat,
+              lng=map_data$starting_point$lng,
+              zoom=map_data$starting_point$zoom) |> 
       addCircleMarkers(color=~map_data$colorpalette(network_type),
                        popup  = ~labs,
                        label = ~network_name,
