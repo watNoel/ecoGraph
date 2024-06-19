@@ -8,7 +8,6 @@ library(purrr) # for MAP
 } 
 #require(plotly)
 
-
 #### Loading data- precomputing
 
 
@@ -52,7 +51,7 @@ ui <- fluidPage(
       leafletOutput("mymap", height = 400),
       br(),  # Add space between the map and tabs
       tabsetPanel(
-        tabPanel("Graph Panel", plotOutput("irisPlot")),
+        tabPanel("Graph Panel", plotOutput("graph")),
         tabPanel("Network Barplot", textOutput("tOut"))
       )
     )
@@ -87,6 +86,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$mymap_marker_click, {
     revals$netID <-input$mymap_marker_click$id
+    print("Something")
     
     
   })
@@ -106,9 +106,8 @@ server <- function(input, output, session) {
   output$graph<-renderPlot({
     
     netName<-revals$netID
-    
+    print("Hey")
 
-    
     net<-all_nws|> 
       filter(network_name==!!netName)|> 
       select(species1, species2, connection_strength)
