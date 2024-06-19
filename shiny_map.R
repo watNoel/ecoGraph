@@ -2,9 +2,9 @@
 library(shiny)
 library(tidyverse)
 library(leaflet) # for interactive map
-
 library(jsonlite) # FOr reading URLS
 library(purrr) # for MAP
+library(igraph) # for network analysis
 } 
 #require(plotly)
 
@@ -18,6 +18,8 @@ json_url <- paste0(base_url,"get_networks.php")
 all_nws <- jsonlite::fromJSON(json_url)
 # This holds also the country/long/lat information
 all_nw_info <- read.csv(paste0(base_url,"get_network_info.php")) # |> select relevant columns
+
+all_nw_names <- distinct(all_nws, network_name)
 
 # Precompute the marker information for the map in the app.
 markers<- all_nw_info |> 
@@ -51,8 +53,8 @@ ui <- fluidPage(
       leafletOutput("mymap", height = 400),
       br(),  # Add space between the map and tabs
       tabsetPanel(
-        tabPanel("Graph Panel", plotOutput("graph")),
-        tabPanel("Network Barplot", textOutput("tOut"))
+        tabPanel("Network Metrics", dataTableOutput('table')),
+        tabPanel("Network Plotting", plotOutput("graph"))
       )
     )
   ),
@@ -101,7 +103,27 @@ server <- function(input, output, session) {
     
  # })
   
+  output$table<-renderDataTable({
+    
+    netName<-revals$netID
   
+net_info <- read.csv(paste0(base_url,paste("get_species_info.php?network_name=",netName, sep="")))
+    
+    # General metrics
+    
+    plants<-net_info|> filter(role=="Plant")|> nrow()
+    animals <- net_info|> filter(role=="Pollinator")|> nrow()
+    size <- plants*animals
+    richness <- plants+animals
+    links <- net|> nrow()
+    conn <- round(links/size, 3)
+    
+netMetrics <- data.frame(netName, size, conn, plants, animals, richness)
+    
+names(netMetrics) <- c("Network", "Size", "Connectance", "Amount of plants species", "Amount of pollinator species", "Total amount of species")
+    
+netMetrics
+    })
   
   output$graph<-renderPlot({
     
@@ -116,7 +138,7 @@ server <- function(input, output, session) {
     
     
     species_info <- read.csv(paste0(base_url,
-                                    paste("get_species_info.php?network_name=",netName, sep="")))
+                            paste("get_species_info.php?network_name=",netName, sep="")))
     
     isResource <- species_info$is.resource %>% as.logical() # 0/1 converted to FALSE/TRUE
     
