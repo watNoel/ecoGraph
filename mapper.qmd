@@ -69,6 +69,8 @@ llmap<-leaflet(markers) |>
             pal = colorpalette, values = ~network_type,
             title = "Network Type",
             opacity = 1)
+llmap
+
 
 llmap.on('click',function(point){
   var addr = 
@@ -78,33 +80,73 @@ llmap.on('click',function(point){
 
 The `e`
 
+ap_input
+
 ```{r}
 
-library(shiny)
-library(leaflet)
+#library(shiny)
+#library(leaflet)
 
-r_colors <- rgb(t(col2rgb(colors()) / 255))
-names(r_colors) <- colors()
+# Here I can add constant stuff
+
+##
+
 
 ui <- fluidPage(
   leafletOutput("mymap"),
-  p(),
-  actionButton("recalc", "New points")
-)
+  p("Something"),
+  textOutput("tOut"))
 
 server <- function(input, output, session) {
 
-  points <- eventReactive(input$recalc, {
-    cbind(rnorm(40) * 2 + 13, rnorm(40) + 48)
-  }, ignoreNULL = FALSE)
+map_input <- reactive({
+    
+  fulldf<- all_nw_info |> 
+  filter(! ( is.na(latitude) | is.na(longitude))) |> 
+  select(network_name, network_type,latitude,longitude,location) |> 
+  rename(lat=latitude,lng=longitude) |> 
+  mutate(labs=paste(sep = "<br/>",
+                    paste0("<b>Network Name:</b> ",network_name),
+                    paste0("<b>Network Type:</b>",network_type),
+                    paste0("<b>Location:</b>", location),
+                    paste0("<b> Long\\Lat: </b>",round(lng,3),"\\",round(lat,3))
+                                            )
+         )
+  
+  colorpalette <- colorFactor("viridis", levels = unique(fulldf$network_type))
 
-  output$mymap <- renderLeaflet({
-    leaflet() %>%
-      addProviderTiles(providers$Stadia.StamenTonerLite,
-        options = providerTileOptions(noWrap = TRUE)
-      ) %>%
-      addMarkers(data = points())
+    
+  
+  return(list(
+    markers=fulldf,
+              colorpalette=colorpalette))
+    
   })
+  
+
+output$tOut <- renderText({
+  print(input$mymap_marker_click)
+  input$mymap_shape_click
+  })
+
+
+output$mymap <- renderLeaflet({
+  mydata <- map_input()
+  leaflet(mydata$markers) |> 
+  addTiles() |> 
+  setView(lat=57.469696,lng=18.487759,zoom=1) |> 
+  addCircleMarkers(color=~mydata$colorpalette(network_type),
+                   popup  = ~labs,
+                   label = ~network_name,
+                   layerId = ~network_name
+                   ) |> 
+  addLegend(
+            position = "topright",
+            pal = mydata$colorpalette, values = ~network_type,
+            title = "Network Type",
+            opacity = 1)
+  })
+
 }
 
 shinyApp(ui, server)
